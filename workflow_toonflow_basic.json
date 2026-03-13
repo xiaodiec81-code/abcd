@@ -23,9 +23,9 @@
         "Node name for S&R": "ToonflowAsset"
       },
       "widgets_values": [
-        "Wang Lin",
-        "A young man with short black hair, wearing a simple blue robe. He has a determined expression and carries a small wooden bag.",
-        "Role"
+        "王林",
+        "一个短发黑发的年轻人，身穿简朴的青色长袍。他神情坚毅，背着一个小木包。",
+        "角色"
       ]
     },
     {
@@ -49,9 +49,9 @@
         "Node name for S&R": "ToonflowAsset"
       },
       "widgets_values": [
-        "Cliff Edge",
-        "A steep cliff overlooking a sea of clouds. Ancient pine trees grow from the rocks. The atmosphere is misty and ethereal.",
-        "Scene"
+        "悬崖边",
+        "一个俯瞰云海的陡峭悬崖。古老的松树从岩石中生长出来。气氛缥缈空灵。",
+        "场景"
       ]
     },
     {
@@ -128,7 +128,7 @@
         "Node name for S&R": "ToonflowPromptLoader"
       },
       "widgets_values": [
-        "Image Prompt Optimizer"
+        "画面提示词优化师"
       ]
     },
     {
@@ -190,8 +190,8 @@
         "Node name for S&R": "ToonflowPromptBuilder"
       },
       "widgets_values": [
-        "Wang Lin stands at the edge of the cliff, looking out at the sea of clouds. He looks lonely but determined.",
-        "Cinematic, Chinese Xianxia Style, 8k resolution",
+        "王林站在悬崖边，眺望云海。他看起来孤独但坚定。",
+        "电影感，中国仙侠风，8k分辨率",
         "16:9",
         ""
       ]
@@ -207,10 +207,10 @@
       "inputs": [],
       "outputs": [],
       "properties": {
-        "text": "Connect the 'llm_input_prompt' output from the Builder node to your own LLM node (e.g., ChatGPT / Gemini / Ooba).\nThe output contains the full system prompt + context + task."
+        "text": "将 Builder 节点的 'llm_input_prompt' 输出连接到你自己的 LLM 节点（如 ChatGPT / Gemini / Ooba）。\n输出内容包含完整的系统提示词 + 上下文 + 任务指令。"
       },
       "widgets_values": [
-        "Connect the 'llm_input_prompt' output from the Builder node to your own LLM node (e.g., ChatGPT / Gemini / Ooba).\nThe output contains the full system prompt + context + task."
+        "将 Builder 节点的 'llm_input_prompt' 输出连接到你自己的 LLM 节点（如 ChatGPT / Gemini / Ooba）。\n输出内容包含完整的系统提示词 + 上下文 + 任务指令。"
       ]
     }
   ],

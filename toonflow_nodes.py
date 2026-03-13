@@ -2,7 +2,7 @@ import json
 
 # Prompts Constants (Keeping them as they are useful context/defaults)
 PROMPTS = {
-    "Story Master (Storyline)": """你是一名资深"故事师"，负责分析小说原文并生成故事线。
+    "故事大师 (故事线)": """你是一名资深"故事师"，负责分析小说原文并生成故事线。
 ## 分析方法论
 ### 1. 全局扫描（宏观把握）
 - **快速通读**：标记每章核心事件
@@ -50,7 +50,7 @@ PROMPTS = {
 [初始主题] → [深化/转变] → [最终主题]
 ══════════════════""",
 
-    "Outline Master (Episodes)": """# Role: 首席短剧主编 AI
+    "大纲大师 (分集)": """# Role: 首席短剧主编 AI
 你是一位拥有亿级播放量项目经验的**首席短剧主编**，精通**网文转短剧**的改编逻辑。你的核心能力是将冗长的文字故事重构为**快节奏、强冲突、高情绪价值**的商业短剧剧本大纲。
 
 # 核心执行原则
@@ -76,7 +76,7 @@ PROMPTS = {
   }
 ]""",
 
-    "Director (Review)": """# 导演系统提示词
+    "导演 (审核)": """# 导演系统提示词
 你是一位经验丰富的**短剧项目导演**，负责审核故事师和大纲师的输出内容。
 
 ## 核心审核理念
@@ -93,7 +93,7 @@ PROMPTS = {
 
 请给出具体的修改意见，或者直接回复"通过"。""",
 
-    "Segment Analyst (Script to Segments)": """你是一位专业的影视片段分析师，专门负责为剧本识别关键片段（Story Segments）。
+    "片段分析师 (剧本转片段)": """你是一位专业的影视片段分析师，专门负责为剧本识别关键片段（Story Segments）。
 
 ## 核心概念
 片段是剧本中推动故事发展的关键转折点或情感高潮，每个片段将用于生成多个画面。你的任务不是机械分割剧本，而是识别故事中真正重要的戏剧性时刻。
@@ -112,7 +112,7 @@ PROMPTS = {
 📝 片段描述：[主体+动作+意义，一句话概括]
 💡 观众收获：[信息/情绪/悬念/共鸣] + 具体内容""",
 
-    "Shot Master (Segment to Prompts)": """你是一位专业的电影分镜师，负责根据剧本片段生成具有电影感的分镜提示词。
+    "分镜大师 (片段转提示词)": """你是一位专业的电影分镜师，负责根据剧本片段生成具有电影感的分镜提示词。
 
 ## 核心原则
 1. **剧本忠实原则**：严格基于剧本内容
@@ -134,7 +134,7 @@ PROMPTS = {
   }
 ]""",
 
-    "Image Prompt Optimizer": """# 电影分镜提示词优化师
+    "画面提示词优化师": """# 电影分镜提示词优化师
 你是专业电影分镜提示词优化师，负责将用户的分镜描述转化为高质量的AI绘图JSON提示词。
 
 ## Prompt核心规则
@@ -148,7 +148,7 @@ PROMPTS = {
 
 请直接输出优化后的英文提示词。""",
 
-    "Character Polish": """# 角色四视图标准提示词生成器
+    "角色三视图优化": """# 角色四视图标准提示词生成器
 你是专业的角色视觉设计师，负责将小说角色描述转换为AI绘图标准四视图提示词。
 
 ## 核心规则
@@ -159,7 +159,7 @@ PROMPTS = {
 ## 输出格式
 请输出一段完整的英文提示词，包含四个视图的描述。""",
 
-    "Scene Polish": """# AI场景图像提示词生成器
+    "场景提示词优化": """# AI场景图像提示词生成器
 你是AI图像生成提示词专家，将场景信息转化为具体、可视化的环境描述，输出中文提示词供后续翻译为英文绘图指令。
 
 ## 核心原则
@@ -169,7 +169,7 @@ PROMPTS = {
 
 请输出一段完整的提示词。""",
 
-    "Prop Polish": """# 角色定位
+    "道具提示词优化": """# 角色定位
 你是专业的AI道具图像提示词设计师，将道具信息转化为具体、可视化的物体描述提示词，供后续AI图像生成使用。
 
 ## 核心原则
@@ -179,7 +179,7 @@ PROMPTS = {
 
 请输出一段完整的提示词。""",
     
-    "Script Generator": """# 角色定位
+    "剧本生成器": """# 角色定位
 你是顶级网文短剧分镜剧本创作专家，擅长将结构化大纲转化为**可直接用于分镜绘制**的专业视觉脚本。
 
 ## 核心原则（强制执行）
@@ -219,7 +219,7 @@ class ToonflowAsset:
             "required": {
                 "name": ("STRING", {"multiline": False}),
                 "description": ("STRING", {"multiline": True}),
-                "type": (["Role", "Scene", "Prop"],),
+                "type": (["角色", "场景", "道具"],),
             }
         }
 
@@ -272,7 +272,7 @@ class ToonflowPromptBuilder:
                 "storyboard_description": ("STRING", {"multiline": True, "default": "[第1行第1列]: 描述..."}),
                 "style": ("STRING", {"default": "Cinematic, High Detail"}),
                 "aspect_ratio": (["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"],),
-                "prompt_template": ("STRING", {"multiline": True, "default": PROMPTS["Image Prompt Optimizer"]}), 
+                "prompt_template": ("STRING", {"multiline": True, "default": PROMPTS["画面提示词优化师"]}), 
             },
             "optional": {
                 "assets": ("TOONFLOW_ASSET_GROUP",),
@@ -402,10 +402,10 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ToonflowPromptLoader": "Toonflow Prompt Loader",
-    "ToonflowAsset": "Toonflow Asset Definition",
-    "ToonflowAssetGroup": "Toonflow Asset Group",
-    "ToonflowPromptBuilder": "Toonflow LLM Prompt Builder",
-    "ToonflowStoryboardParser": "Toonflow Storyboard Parser",
-    "ToonflowScriptParser": "Toonflow Script Parser"
+    "ToonflowPromptLoader": "Toonflow 提示词加载器",
+    "ToonflowAsset": "Toonflow 资产定义",
+    "ToonflowAssetGroup": "Toonflow 资产组",
+    "ToonflowPromptBuilder": "Toonflow LLM 提示词构建器",
+    "ToonflowStoryboardParser": "Toonflow 分镜解析器",
+    "ToonflowScriptParser": "Toonflow 剧本解析器"
 }
