@@ -1,0 +1,227 @@
+{
+  "last_node_id": 20,
+  "last_link_id": 20,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "ToonflowAsset",
+      "pos": [100, 100],
+      "size": [300, 150],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "TOONFLOW_ASSET",
+          "type": "TOONFLOW_ASSET",
+          "links": [1],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToonflowAsset"
+      },
+      "widgets_values": [
+        "Wang Lin",
+        "A young man with short black hair, wearing a simple blue robe. He has a determined expression and carries a small wooden bag.",
+        "Role"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "ToonflowAsset",
+      "pos": [100, 300],
+      "size": [300, 150],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "TOONFLOW_ASSET",
+          "type": "TOONFLOW_ASSET",
+          "links": [2],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToonflowAsset"
+      },
+      "widgets_values": [
+        "Cliff Edge",
+        "A steep cliff overlooking a sea of clouds. Ancient pine trees grow from the rocks. The atmosphere is misty and ethereal.",
+        "Scene"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "ToonflowAssetGroup",
+      "pos": [450, 200],
+      "size": [300, 150],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "asset_1",
+          "type": "TOONFLOW_ASSET",
+          "link": 1
+        },
+        {
+          "name": "asset_2",
+          "type": "TOONFLOW_ASSET",
+          "link": 2
+        },
+        {
+          "name": "asset_3",
+          "type": "TOONFLOW_ASSET",
+          "link": null
+        },
+        {
+          "name": "asset_4",
+          "type": "TOONFLOW_ASSET",
+          "link": null
+        },
+        {
+          "name": "asset_5",
+          "type": "TOONFLOW_ASSET",
+          "link": null
+        },
+        {
+          "name": "prev_group",
+          "type": "TOONFLOW_ASSET_GROUP",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "TOONFLOW_ASSET_GROUP",
+          "type": "TOONFLOW_ASSET_GROUP",
+          "links": [3],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToonflowAssetGroup"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "ToonflowPromptLoader",
+      "pos": [450, 450],
+      "size": [300, 100],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [4],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToonflowPromptLoader"
+      },
+      "widgets_values": [
+        "Image Prompt Optimizer"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "ToonflowPromptBuilder",
+      "pos": [800, 250],
+      "size": [400, 250],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "storyboard_description",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "storyboard_description"
+          }
+        },
+        {
+          "name": "style",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "style"
+          }
+        },
+        {
+          "name": "aspect_ratio",
+          "type": "STRING",
+          "link": null,
+          "widget": {
+            "name": "aspect_ratio"
+          }
+        },
+        {
+          "name": "prompt_template",
+          "type": "STRING",
+          "link": 4,
+          "widget": {
+            "name": "prompt_template"
+          }
+        },
+        {
+          "name": "assets",
+          "type": "TOONFLOW_ASSET_GROUP",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "llm_input_prompt",
+          "type": "STRING",
+          "links": [],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ToonflowPromptBuilder"
+      },
+      "widgets_values": [
+        "Wang Lin stands at the edge of the cliff, looking out at the sea of clouds. He looks lonely but determined.",
+        "Cinematic, Chinese Xianxia Style, 8k resolution",
+        "16:9",
+        ""
+      ]
+    },
+    {
+      "id": 6,
+      "type": "Note",
+      "pos": [800, 150],
+      "size": [400, 80],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "Connect the 'llm_input_prompt' output from the Builder node to your own LLM node (e.g., ChatGPT / Gemini / Ooba).\nThe output contains the full system prompt + context + task."
+      },
+      "widgets_values": [
+        "Connect the 'llm_input_prompt' output from the Builder node to your own LLM node (e.g., ChatGPT / Gemini / Ooba).\nThe output contains the full system prompt + context + task."
+      ]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 3, 0, "TOONFLOW_ASSET"],
+    [2, 2, 0, 3, 1, "TOONFLOW_ASSET"],
+    [3, 3, 0, 5, 4, "TOONFLOW_ASSET_GROUP"],
+    [4, 4, 0, 5, 3, "STRING"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
