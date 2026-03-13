@@ -1,8 +1,6 @@
 import json
-import os
-import requests
 
-# Prompts Constants
+# Prompts Constants (Keeping them as they are useful context/defaults)
 PROMPTS = {
     "Story Master (Storyline)": """你是一名资深"故事师"，负责分析小说原文并生成故事线。
 ## 分析方法论
@@ -91,6 +89,7 @@ PROMPTS = {
 2. 逻辑连贯性：因果关系是否成立？
 3. 人物一致性：人物行为是否符合设定？
 4. 商业价值：是否具备短剧的快节奏和强冲突？
+5. 
 
 请给出具体的修改意见，或者直接回复"通过"。""",
 
@@ -211,45 +210,119 @@ class ToonflowPromptLoader:
     def load_prompt(self, prompt_type):
         return (PROMPTS[prompt_type],)
 
+# --- New Asset Nodes ---
 
-class ToonflowSimpleLLM:
+class ToonflowAsset:
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "system_prompt": ("STRING", {"multiline": True}),
-                "user_input": ("STRING", {"multiline": True}),
-                "api_key": ("STRING", {"multiline": False, "default": "sk-..."}),
-                "model": ("STRING", {"default": "gpt-4o"}),
-                "base_url": ("STRING", {"default": "https://api.openai.com/v1"}),
+                "name": ("STRING", {"multiline": False}),
+                "description": ("STRING", {"multiline": True}),
+                "type": (["Role", "Scene", "Prop"],),
+            }
+        }
+
+    RETURN_TYPES = ("TOONFLOW_ASSET",)
+    FUNCTION = "create_asset"
+    CATEGORY = "Toonflow/Assets"
+
+    def create_asset(self, name, description, type):
+        return ({"name": name, "description": description, "type": type},)
+
+class ToonflowAssetGroup:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                # Starting with 1, user can chain them or we can add more inputs
+                "asset_1": ("TOONFLOW_ASSET",),
+            },
+            "optional": {
+                "asset_2": ("TOONFLOW_ASSET",),
+                "asset_3": ("TOONFLOW_ASSET",),
+                "asset_4": ("TOONFLOW_ASSET",),
+                "asset_5": ("TOONFLOW_ASSET",),
+                "prev_group": ("TOONFLOW_ASSET_GROUP",),
+            }
+        }
+
+    RETURN_TYPES = ("TOONFLOW_ASSET_GROUP",)
+    FUNCTION = "group_assets"
+    CATEGORY = "Toonflow/Assets"
+
+    def group_assets(self, asset_1, asset_2=None, asset_3=None, asset_4=None, asset_5=None, prev_group=None):
+        assets = []
+        if prev_group:
+            assets.extend(prev_group)
+        
+        if asset_1: assets.append(asset_1)
+        if asset_2: assets.append(asset_2)
+        if asset_3: assets.append(asset_3)
+        if asset_4: assets.append(asset_4)
+        if asset_5: assets.append(asset_5)
+        
+        return (assets,)
+
+class ToonflowPromptBuilder:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "storyboard_description": ("STRING", {"multiline": True, "default": "[第1行第1列]: 描述..."}),
+                "style": ("STRING", {"default": "Cinematic, High Detail"}),
+                "aspect_ratio": (["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"],),
+                "prompt_template": ("STRING", {"multiline": True, "default": PROMPTS["Image Prompt Optimizer"]}), 
+            },
+            "optional": {
+                "assets": ("TOONFLOW_ASSET_GROUP",),
             }
         }
 
     RETURN_TYPES = ("STRING",)
-    FUNCTION = "generate"
+    RETURN_NAMES = ("llm_input_prompt",)
+    FUNCTION = "build_prompt"
     CATEGORY = "Toonflow"
 
-    def generate(self, system_prompt, user_input, api_key, model, base_url):
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
+    def build_prompt(self, storyboard_description, style, aspect_ratio, prompt_template, assets=None):
+        # 1. Format Assets Section
+        assets_section = ""
+        if assets:
+            assets_list_str = "\n".join([f"- {a['name']}：{a['description']}" for a in assets])
+            assets_section = f"\n【可用资产】\n{assets_list_str}\n\n⚠️ 必须使用完整资产名称，禁止简称或代词。"
         
-        data = {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_input}
-            ]
+        # 2. Format Aspect Ratio Description
+        ar_desc_map = {
+            "16:9": "电影宽银幕",
+            "9:16": "竖屏短剧",
+            "21:9": "超宽银幕史诗感",
+            "1:1": "方形构图",
+            "4:3": "经典银幕",
+            "3:4": "竖版经典"
         }
-        
-        try:
-            response = requests.post(f"{base_url}/chat/completions", headers=headers, json=data)
-            response.raise_for_status()
-            result = response.json()
-            return (result["choices"][0]["message"]["content"],)
-        except Exception as e:
-            return (f"Error: {str(e)}",)
+        ar_desc = ar_desc_map.get(aspect_ratio, "标准比例")
+
+        # 3. Construct the User Message part (simulating generateGridPrompt logic)
+        user_content = f"""请优化以下分镜提示词：
+
+【比例】{aspect_ratio}（{ar_desc}）
+【风格】{style}
+{assets_section}
+
+【原始内容】
+{storyboard_description}"""
+
+        # 4. Combine System + User for the final LLM input
+        # The user will feed this into their own LLM node
+        final_prompt = f"""[System Prompt]
+{prompt_template}
+
+[User Input]
+{user_content}"""
+
+        return (final_prompt,)
+
+# --- Parsers (Keeping them as they are useful utilities) ---
 
 class ToonflowStoryboardParser:
     @classmethod
@@ -267,6 +340,7 @@ class ToonflowStoryboardParser:
 
     def parse(self, llm_output):
         try:
+            # Try to handle JSON format first
             start_idx = llm_output.find('[')
             end_idx = llm_output.rfind(']') + 1
             if start_idx != -1 and end_idx != -1:
@@ -284,6 +358,12 @@ class ToonflowStoryboardParser:
                     
                     if all_prompts:
                         return ("\n".join(all_prompts), all_prompts[0])
+            
+            # If not JSON, it might be the direct output from the Image Prompt Optimizer
+            # which might just return the text. 
+            # We can try to split by lines if it looks like a list, or just return as is.
+            return (llm_output, llm_output)
+
         except Exception as e:
             print(f"ToonflowStoryboardParser error: {e}")
             pass
@@ -314,14 +394,18 @@ class ToonflowScriptParser:
 
 NODE_CLASS_MAPPINGS = {
     "ToonflowPromptLoader": ToonflowPromptLoader,
-    "ToonflowSimpleLLM": ToonflowSimpleLLM,
+    "ToonflowAsset": ToonflowAsset,
+    "ToonflowAssetGroup": ToonflowAssetGroup,
+    "ToonflowPromptBuilder": ToonflowPromptBuilder,
     "ToonflowStoryboardParser": ToonflowStoryboardParser,
     "ToonflowScriptParser": ToonflowScriptParser
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "ToonflowPromptLoader": "Toonflow Prompt Loader",
-    "ToonflowSimpleLLM": "Toonflow Simple LLM",
+    "ToonflowAsset": "Toonflow Asset Definition",
+    "ToonflowAssetGroup": "Toonflow Asset Group",
+    "ToonflowPromptBuilder": "Toonflow LLM Prompt Builder",
     "ToonflowStoryboardParser": "Toonflow Storyboard Parser",
     "ToonflowScriptParser": "Toonflow Script Parser"
 }
